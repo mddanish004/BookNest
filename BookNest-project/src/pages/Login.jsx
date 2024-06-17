@@ -1,22 +1,20 @@
 import React, { useState } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useFirebase } from "../context/Firebase.jsx";
+import { useFirebase } from '../context/Firebase.jsx';
 
-const RegisterPage = () => {
+const LoginPage = () => {
   const firebase = useFirebase();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  console.log(firebase);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Signing up a user...');
-    try {
-      const result = await firebase.signupUser(email, password);
-      console.log('Sign up successful!', result);
-    } catch (error) {
-      console.error('Sign up error:', error);
-    }
+    console.log('Logging in a user...');
+    const result = await firebase.signinUser(email, password);
+    console.log('Log in successful!', result);
   };
 
   return (
@@ -30,9 +28,7 @@ const RegisterPage = () => {
             type="email" 
             placeholder="Enter email" 
           />
-          <Form.Text className="text-muted">
-            We'll never share your email with anyone else.
-          </Form.Text>
+          
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -46,12 +42,13 @@ const RegisterPage = () => {
         </Form.Group>
         
         <Button variant="primary" type="submit">
-          Create Account
+          Log in
         </Button>
       </Form>
-      
+      <h1 className="mt-5 mb-5">Or</h1>
+      <button onClick={firebase.signinWithGoogle} variant="danger">Sign in with Google</button>
     </div>
   );
 };
 
-export default RegisterPage;
+export default LoginPage;
