@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useFirebase } from '../context/Firebase.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const firebase = useFirebase();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  console.log(firebase);
+  useEffect(() => {
+    if (firebase.isLoggedIn) {
+      navigate("/home");
+    }
+  }, [firebase, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Logging in a user...');
     const result = await firebase.signinUser(email, password);
     console.log('Log in successful!', result);
+    navigate("/home"); // Navigate to home after login
   };
 
   return (
@@ -28,7 +35,6 @@ const LoginPage = () => {
             type="email" 
             placeholder="Enter email" 
           />
-          
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -46,7 +52,10 @@ const LoginPage = () => {
         </Button>
       </Form>
       <h1 className="mt-5 mb-5">Or</h1>
-      <button onClick={firebase.signinWithGoogle} variant="danger">Sign in with Google</button>
+      <button onClick={async () => {
+        await firebase.signinWithGoogle();
+        navigate("/home"); // Navigate to home after Google login
+      }} variant="danger">Sign in with Google</button>
     </div>
   );
 };
